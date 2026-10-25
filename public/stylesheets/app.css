@@ -1,0 +1,126 @@
+/* Ajustes do LiveTalk sobre o Bootstrap 2.3.1 (style.css) */
+
+body {
+  padding: 20px 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  padding: 8px 12px;
+  background: #fff;
+  z-index: 1000;
+}
+
+.skip-link:focus {
+  left: 10px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+a:focus,
+button:focus,
+input:focus,
+[tabindex]:focus {
+  outline: 2px solid #0088cc;
+  outline-offset: 2px;
+}
+
+.barra-usuario {
+  margin-bottom: 10px;
+}
+
+.form-login label {
+  display: block;
+  margin-top: 8px;
+  font-weight: bold;
+}
+
+.form-login button {
+  margin-top: 12px;
+}
+
+.vazio {
+  color: #555;
+}
+
+.tabela-responsiva {
+  overflow-x: auto;
+}
+
+.tabela-responsiva .btn {
+  margin: 2px 0;
+}
+
+.dados-contato {
+  display: inline-block;
+  text-align: left;
+  margin: 0 20px 10px 0;
+}
+
+.chat-mensagens {
+  height: 280px;
+  overflow-y: auto;
+  padding: 10px;
+  margin-bottom: 10px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  word-wrap: break-word;
+}
+
+.chat-linha {
+  margin: 0 0 4px;
+}
+
+.chat-sistema {
+  color: #666;
+  font-style: italic;
+}
+
+.chat-form {
+  display: flex;
+}
+
+.chat-form input {
+  flex: 1;
+  min-width: 0;
+}
+
+.chat-acoes {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (max-width: 767px) {
+  .hero-unit {
+    padding: 20px;
+  }
+
+  .hero-unit h1 {
+    font-size: 40px;
+  }
+
+  .form-inline input,
+  .form-inline .btn {
+    display: block;
+    width: 100%;
+    margin: 0 0 8px;
+    box-sizing: border-box;
+    min-height: 30px;
+  }
+}

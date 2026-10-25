@@ -1,76 +1,101 @@
-const { Types: { ObjectId } } = require('mongoose');
+const validacao = require('../libs/validacao');
 
 module.exports = (app) => {
   const Usuario = app.models.usuario;
 
+  const naoEncontrado = (res) => res.status(404).render('not-found');
+
+  const buscarContato = async (req) => {
+    const contatoId = req.params.id;
+    if (!validacao.objectId(contatoId)) return null;
+    const usuario = await Usuario.findOne(
+      { _id: req.session.usuario._id },
+      { contatos: { $elemMatch: { _id: contatoId } } }
+    ).lean();
+    return usuario?.contatos?.[0] || null;
+  };
+
   const ContatosController = {
-    index(req, res) {
-      const { _id } = req.session.usuario;
-      Usuario.findById(_id)
-        .then((usuario) => {
-          const { contatos } = usuario;
-          res.render('contatos/index', { contatos });
-        })
-        .catch(() => res.redirect('/'))
-        ;
+    async index(req, res, next) {
+      try {
+        const usuario = await Usuario.findById(req.session.usuario._id).select('contatos').lean();
+        if (!usuario) {
+          return req.session.destroy(() => res.redirect('/'));
+        }
+        return res.render('contatos/index', { contatos: usuario.contatos });
+      } catch (err) {
+        return next(err);
+      }
     },
-    create(req, res) {
-      const { contato } = req.body;
-      const { _id } = req.session.usuario;
-      const set = { $push: { contatos: contato } };
-      Usuario.findByIdAndUpdate(_id, set)
-        .then(() => res.redirect('/contatos'))
-        .catch(() => res.redirect('/'))
-        ;
+    async create(req, res, next) {
+      const { valores, erros } = validacao.pessoa(req.body?.contato);
+      if (erros.length) {
+        req.flash('erro', erros.join(' '));
+        return res.redirect('/contatos');
+      }
+      try {
+        await Usuario.updateOne(
+          { _id: req.session.usuario._id },
+          { $push: { contatos: valores } },
+          { runValidators: true }
+        );
+        req.flash('sucesso', `Contato "${valores.nome}" cadastrado.`);
+        return res.redirect('/contatos');
+      } catch (err) {
+        return next(err);
+      }
     },
-    show(req, res) {
-      const { _id } = req.session.usuario;
+    async show(req, res, next) {
+      try {
+        const contato = await buscarContato(req);
+        return contato ? res.render('contatos/show', { contato }) : naoEncontrado(res);
+      } catch (err) {
+        return next(err);
+      }
+    },
+    async edit(req, res, next) {
+      try {
+        const contato = await buscarContato(req);
+        return contato ? res.render('contatos/edit', { contato }) : naoEncontrado(res);
+      } catch (err) {
+        return next(err);
+      }
+    },
+    async update(req, res, next) {
       const contatoId = req.params.id;
-      Usuario.findById(_id)
-        .then((usuario) => {
-          const { contatos } = usuario;
-          const contato = contatos.find((ct) => {
-            return ct._id.toString() === contatoId;
-          });
-          res.render('contatos/show', { contato });
-        })
-        .catch(() => res.redirect('/'))
-        ;
+      if (!validacao.objectId(contatoId)) return naoEncontrado(res);
+      const { valores, erros } = validacao.pessoa(req.body?.contato);
+      if (erros.length) {
+        req.flash('erro', erros.join(' '));
+        return res.redirect(`/contato/${contatoId}/editar`);
+      }
+      try {
+        const resultado = await Usuario.updateOne(
+          { _id: req.session.usuario._id, 'contatos._id': contatoId },
+          { $set: { 'contatos.$.nome': valores.nome, 'contatos.$.email': valores.email } },
+          { runValidators: true }
+        );
+        if (!resultado.matchedCount) return naoEncontrado(res);
+        req.flash('sucesso', 'Contato atualizado.');
+        return res.redirect('/contatos');
+      } catch (err) {
+        return next(err);
+      }
     },
-    edit(req, res) {
-      const { _id } = req.session.usuario;
+    async destroy(req, res, next) {
       const contatoId = req.params.id;
-      Usuario.findById(_id)
-        .then((usuario) => {
-          const { contatos } = usuario;
-          const contato = contatos.find((ct) => {
-            return ct._id.toString() === contatoId;
-          });
-          res.render('contatos/edit', { contato, usuario });
-        })
-        .catch(() => res.redirect('/'))
-        ;
-    },
-    update(req, res) {
-      const contatoId = req.params.id;
-      const { contato } = req.body;
-      const { usuario } = req.session;
-      const where = { 'contatos._id': contatoId };
-      const set = { $set: { 'contatos.$': contato } };
-      Usuario.update(where, set)
-        .then(() => res.redirect('/contatos'))
-        .catch(() => res.redirect('/'))
-        ;
-    },
-    destroy(req, res) {
-      const contatoId = req.params.id;
-      const { _id } = req.session.usuario;
-      const where = { _id };
-      const set = { $pull: { contatos: { _id: ObjectId(contatoId) } } };
-      Usuario.update(where, set)
-        .then(() => res.redirect('/contatos'))
-        .catch(() => res.redirect('/'))
-        ;
+      if (!validacao.objectId(contatoId)) return naoEncontrado(res);
+      try {
+        const resultado = await Usuario.updateOne(
+          { _id: req.session.usuario._id, 'contatos._id': contatoId },
+          { $pull: { contatos: { _id: contatoId } } }
+        );
+        if (!resultado.modifiedCount) return naoEncontrado(res);
+        req.flash('sucesso', 'Contato excluído.');
+        return res.redirect('/contatos');
+      } catch (err) {
+        return next(err);
+      }
     }
   };
   return ContatosController;

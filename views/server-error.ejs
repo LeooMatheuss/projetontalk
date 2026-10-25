@@ -1,15 +1,13 @@
-<% include header %>
+<%- include('header', { titulo: 'Erro' }) %>
   <header class="row-fluid text-center">
-    <h1>Ntalk</h1>
-    <h4>Aconteceu algo terrível! :(</h4>
+    <h1>LiveTalk</h1>
+    <h4>Aconteceu algo inesperado! :(</h4>
   </header>
   <section class="row-fluid text-center">
-    <p class="text-left">
-      Veja o que aconteceu...
-      <br>
-      <%- error.message %>
-        <hr>
-        Que tal voltar <a href="/">home page?</a> :)
+    <p>
+      <%= mensagem %>
     </p>
+    <hr>
+    <p>Que tal voltar para a <a href="/">página inicial</a>? :)</p>
   </section>
-  <% include footer %>
+<%- include('footer') %>

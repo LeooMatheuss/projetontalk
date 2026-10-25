@@ -1,34 +1,22 @@
-<% include ../header %>
-  <script src="/socket.io/socket.io.js"></script>
-  <script>
-    var socket = io.connect('http://localhost:3000');
-
-    socket.emit('join', '<%- sala %>');
-
-    socket.on('send-client', function (msg) {
-      console.log('', msg)
-      var chat = document.getElementById('chat');
-      chat.innerHTML += msg;
-    });
-
-    var enviar = function () {
-      var msg = document.getElementById('msg').value;
-      socket.emit('send-server', { nome: 'mensagem', msg: msg });
-    };
-  </script>
-
+<%- include('../header', { titulo: 'Chat' }) %>
   <header class="row-fluid text-center">
-    <h2>Ntalk - Chat</h2>
+    <h2>LiveTalk - Chat</h2>
   </header>
   <section class="row-fluid">
-    <div class="well span6 offset3">
-      <pre id="chat" class="pre-scrollable" style="width:auto;height:250px;"></pre>
-      <div class="input-append">
-        <input type="text" id="msg" class="input-xlarge" placeholder="Digite sua mensagem">
-        <button class="btn btn-success" onclick="enviar();">Enviar</button>
+    <div class="well span6 offset3 chat" id="chat-app" data-sala="<%= sala %>">
+      <p class="muted chat-status" id="chat-status" role="status">Conectando...</p>
+      <div id="chat" class="chat-mensagens" role="log" aria-live="polite" aria-label="Mensagens do chat" tabindex="0"></div>
+      <form id="chat-form" class="input-append chat-form" autocomplete="off">
+        <label for="msg" class="sr-only">Mensagem</label>
+        <input type="text" id="msg" class="input-xlarge" placeholder="Digite sua mensagem" maxlength="1000" required disabled>
+        <button type="submit" class="btn btn-success" id="chat-enviar" disabled>Enviar</button>
+      </form>
+      <p class="chat-acoes">
+        <small class="muted">Compartilhe o endereço desta página para convidar alguém para a sala.</small>
         <a href="/contatos" class="btn btn-inverse">Sair do chat</a>
-      </div>
+      </p>
     </div>
   </section>
-  <% include ../exit %>
-    <% include ../footer %>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/javascripts/chat.js"></script>
+<%- include('../footer') %>

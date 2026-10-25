@@ -1,16 +1,17 @@
-<% include ../header %>
+<%- include('../header', { titulo: 'Entrar' }) %>
   <header class="row-fluid text-center">
-    <h1>Ntalk</h1>
-    <h4>Bem-vindo!</h4>
+    <h1>LiveTalk</h1>
+    <h4>Bem-vindo! Informe seu nome e e-mail para acessar sua agenda.</h4>
   </header>
   <section class="row-fluid text-center">
-    <form action="/entrar" method="post">
-
-      <input type="text" name="usuario[nome]" placeholder="Digite seu nome.">
-      <br>
-      <input type="text" name="usuario[email]" placeholder="Digite seu e-mail.">
-      <br>
+    <form action="/entrar" method="post" class="form-login">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <label for="usuario-nome">Nome</label>
+      <input type="text" id="usuario-nome" name="usuario[nome]" placeholder="Digite seu nome." required maxlength="60" autocomplete="name" autofocus>
+      <label for="usuario-email">E-mail</label>
+      <input type="email" id="usuario-email" name="usuario[email]" placeholder="Digite seu e-mail." required maxlength="120" autocomplete="email">
       <button type="submit" class="btn btn-success">Entrar</button>
     </form>
+    <p class="muted"><small>Na primeira vez, sua conta é criada automaticamente com esse nome e e-mail.</small></p>
   </section>
-  <% include ../footer %>
+<%- include('../footer') %>

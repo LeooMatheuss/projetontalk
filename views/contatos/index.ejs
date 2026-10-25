@@ -1,46 +1,49 @@
-<% include ../header %>
+<%- include('../header', { titulo: 'Contatos' }) %>
   <header class="row-fluid text-center">
-    <h2>Ntalk - Agenda de contatos</h2>
+    <h2>LiveTalk - Agenda de contatos</h2>
   </header>
   <section class="row-fluid">
     <section class="span12">
       <form action="/contato" method="post" class="well form-inline">
-
-        <input type="text" name="contato[nome]" placeholder="Nome">
-        <input type="text" name="contato[email]" placeholder="E-mail">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <label for="contato-nome" class="sr-only">Nome</label>
+        <input type="text" id="contato-nome" name="contato[nome]" placeholder="Nome" required maxlength="60">
+        <label for="contato-email" class="sr-only">E-mail</label>
+        <input type="email" id="contato-email" name="contato[email]" placeholder="E-mail" required maxlength="120">
         <button type="submit" class="btn btn-primary">Cadastrar</button>
       </form>
-      <table class="table well">
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>E-mail</th>
-            <th>Status</th>
-            <th>Ação</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% contatos.forEach(function(contato) { %>
-            <tr>
-              <td>
-                <%- contato.nome %>
-              </td>
-              <td>
-                <%- contato.email %>
-              </td>
-              <td>
-                <span id="notify_<%- contato.email %>" class="label">Offline</span>
-              </td>
-              <td>
-                <a href="/contato/<%- contato._id %>" class="btn btn-info">Detalhes</a>
-                <a href="/chat" id="chat_<%- contato.email %>" class="btn btn-inverse">Conversar</a>
-              </td>
-            </tr>
-            <% }) %>
-        </tbody>
-      </table>
+      <% if (contatos.length === 0) { %>
+        <p class="well text-center vazio">Você ainda não tem contatos. Cadastre o primeiro usando o formulário acima.</p>
+      <% } else { %>
+        <div class="tabela-responsiva">
+          <table class="table well">
+            <caption class="sr-only">Lista de contatos</caption>
+            <thead>
+              <tr>
+                <th scope="col">Nome</th>
+                <th scope="col">E-mail</th>
+                <th scope="col">Status</th>
+                <th scope="col">Ação</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% contatos.forEach(function(contato) { %>
+                <tr data-email="<%= contato.email %>">
+                  <td><%= contato.nome %></td>
+                  <td><%= contato.email %></td>
+                  <td><span class="label js-status" aria-live="polite">Offline</span></td>
+                  <td>
+                    <a href="/contato/<%= contato._id %>" class="btn btn-info">Detalhes</a>
+                    <a href="/chat" class="btn btn-inverse js-chat">Conversar</a>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
     </section>
   </section>
-  <% include notify_script %>
-    <% include ../exit %>
-      <% include ../footer %>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/javascripts/contatos.js"></script>
+<%- include('../footer') %>

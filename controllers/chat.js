@@ -1,16 +1,15 @@
-const crypto = require('crypto');
+const crypto = require('node:crypto');
+const validacao = require('../libs/validacao');
 
 module.exports = (app) => {
   const ChatController = {
     index(req, res) {
       const { sala } = req.query;
-      let hashDaSala = sala;
-      if (!hashDaSala) {
-        const timestamp = Date.now().toString();
-        const md5 = crypto.createHash('md5');
-        hashDaSala = md5.update(timestamp).digest('hex');
+      if (!validacao.sala(sala)) {
+        const novaSala = crypto.randomBytes(16).toString('hex');
+        return res.redirect(`/chat?sala=${novaSala}`);
       }
-      res.render('chat/index', { sala: hashDaSala });
+      return res.render('chat/index', { sala });
     }
   };
   return ChatController;

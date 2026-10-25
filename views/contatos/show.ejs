@@ -1,21 +1,19 @@
-<% include ../header %>
+<%- include('../header', { titulo: contato.nome }) %>
   <header class="row-fluid text-center">
-    <h2>Ntalk - Dados do contato</h2>
+    <h2>LiveTalk - Dados do contato</h2>
   </header>
   <section class="row-fluid text-center">
-    <form action="/contato/<%- contato._id %>?_method=DELETE" method="post" class="well form-inline">
-
-      <label>Nome:</label>
-      <span class="input-medium uneditable-input">
-        <%- contato.nome %>
-      </span>
-      <label>E-mail:</label>
-      <span class="input-medium uneditable-input">
-        <%- contato.email %>
-      </span>
-      <a href="/contato/<%- contato._id %>/editar" class="btn btn-info">Editar</a>
+    <form action="/contato/<%= contato._id %>?_method=DELETE" method="post" class="well form-inline" data-confirm="Excluir o contato &quot;<%= contato.nome %>&quot;? Esta ação não pode ser desfeita.">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <dl class="dl-horizontal dados-contato">
+        <dt>Nome:</dt>
+        <dd><%= contato.nome %></dd>
+        <dt>E-mail:</dt>
+        <dd><%= contato.email %></dd>
+      </dl>
+      <a href="/contatos" class="btn">Voltar</a>
+      <a href="/contato/<%= contato._id %>/editar" class="btn btn-info">Editar</a>
       <button type="submit" class="btn btn-danger">Excluir</button>
     </form>
   </section>
-  <% include ../exit %>
-    <% include ../footer %>
+<%- include('../footer') %>

@@ -1,19 +1,26 @@
 const db = require('../libs/db_connect.js');
-const Schema = require('mongoose').Schema;
+const { Schema } = require('mongoose');
 
 module.exports = () => {
-  const contato = Schema({
-    nome: String,
-    email: String
+  if (db.models.usuarios) {
+    return db.models.usuarios;
+  }
+  const contato = new Schema({
+    nome: { type: String, trim: true, maxlength: 60 },
+    email: { type: String, trim: true, maxlength: 120 }
   });
-  const usuario = Schema({
+  const usuario = new Schema({
     nome: {
       type: String,
-      required: true
+      required: true,
+      trim: true,
+      maxlength: 60
     },
     email: {
       type: String,
       required: true,
+      trim: true,
+      maxlength: 120,
       index: { unique: true }
     },
     contatos: [contato]

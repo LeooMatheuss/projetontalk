@@ -1,14 +1,28 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 
 <head>
   <meta charset="utf-8">
-  <title>Ntalk - Agenda de contatos</title>
-  <link rel='stylesheet' href='/stylesheets/style.css' />
-
-
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= typeof titulo !== 'undefined' ? titulo + ' | ' : '' %>LiveTalk - Agenda de contatos</title>
+  <link rel="stylesheet" href="/stylesheets/style.css">
+  <link rel="stylesheet" href="/stylesheets/app.css">
 </head>
 
 <body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
   <div class="container-fluid">
-    <div class="clearfix hero-unit">
+    <% if (typeof usuario !== 'undefined' && usuario) { %>
+      <nav class="row-fluid text-right barra-usuario" aria-label="Navegação principal">
+        <span class="muted">Olá, <strong><%= usuario.nome %></strong></span> |
+        <a href="/contatos">Contatos</a> |
+        <a href="/chat">Novo chat</a> |
+        <a href="/sair">Sair</a>
+      </nav>
+    <% } %>
+    <main id="conteudo" class="clearfix hero-unit">
+      <% if (typeof flash !== 'undefined' && flash) { %>
+        <div class="alert <%= flash.tipo === 'erro' ? 'alert-error' : 'alert-success' %>" role="<%= flash.tipo === 'erro' ? 'alert' : 'status' %>">
+          <%= flash.mensagem %>
+        </div>
+      <% } %>

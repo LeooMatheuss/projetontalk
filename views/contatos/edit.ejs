@@ -1,17 +1,17 @@
-<% include ../header %>
+<%- include('../header', { titulo: 'Editar contato' }) %>
   <header class="row-fluid text-center">
-    <h2>Ntalk - Agenda de contatos</h2>
+    <h2>LiveTalk - Agenda de contatos</h2>
   </header>
   <section class="row-fluid text-center">
-    <form action="/contato/<%- contato._id %>?_method=PUT" method="post" class="well form-inline">
-
+    <form action="/contato/<%= contato._id %>?_method=PUT" method="post" class="well form-inline">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
       <h4>Editar contato</h4>
-      <label>Nome:</label>
-      <input type="text" name="contato[nome]" value="<%- contato.nome %>" class="input-medium">
-      <label>E-mail:</label>
-      <input type="text" name="contato[email]" value="<%- contato.email %>" class="input-medium">
+      <label for="contato-nome">Nome:</label>
+      <input type="text" id="contato-nome" name="contato[nome]" value="<%= contato.nome %>" class="input-medium" required maxlength="60">
+      <label for="contato-email">E-mail:</label>
+      <input type="email" id="contato-email" name="contato[email]" value="<%= contato.email %>" class="input-medium" required maxlength="120">
+      <a href="/contato/<%= contato._id %>" class="btn">Cancelar</a>
       <button type="submit" class="btn btn-primary">Atualizar</button>
     </form>
   </section>
-  <% include ../exit %>
-    <% include ../footer %>
+<%- include('../footer') %>
